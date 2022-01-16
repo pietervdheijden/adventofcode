@@ -26,5 +26,5 @@ function calculate(assignment1, dataset, debug = false) {
 
 console.log(`Assigment 1 (mypuzzle): expected: 7, actual: ${calculate(true, 'example.txt')}`);
 console.log(`Assigment 1 (mypuzzle): expected: 1715, actual: ${calculate(true, 'mypuzzle.txt')}`);
-console.log(`Assigment 2 (example): expected: 5, actual: ${calculate(false, 'mypuzzle.txt')}`);
+console.log(`Assigment 2 (example): expected: 5, actual: ${calculate(false, 'example.txt')}`);
 console.log(`Assigment 2 (mypuzzle): expected: 1739, actual: ${calculate(false, 'mypuzzle.txt')}`);
