@@ -1,15 +1,16 @@
 # Script to create boilerplate code for AdventOfCode solutions
+# Usage:
+#   ./create-boilerplate-code.sh <day>
 # Example:
 #   ./create-boilerplate-code.sh 05
 #   or
 #   ./create-boilerplate-code.sh 23
 
+# Get parameters
 day=$1
 
+# (Re)create directory
 dayDir="day${day}"
-echo $dayDir
-
-# Create directory
 rm -rf $dayDir
 mkdir $dayDir
 
