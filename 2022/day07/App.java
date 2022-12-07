@@ -80,27 +80,19 @@ public class App {
     // Calculate the size of a directory by recursively adding the size of the subdirectories.
     private static int getSize(HashMap<String, Directory> directories, String directoryName) {
         var directory = directories.get(directoryName);
-        var size = directory.getSize();
-        for (var subDirectory : directory.getSubDirectories())
+        var size = directory.size;
+        for (var subDirectory : directory.subDirectores)
             size += getSize(directories, subDirectory);
         return size;
     }
 
-    private static class Directory {
-        private int size;
-        private List<String> subDirectories;
+    private final static class Directory {
+        public int size;
+        public List<String> subDirectores;
 
         public Directory(int size, List<String> subDirectories) {
             this.size = size;
-            this.subDirectories = subDirectories;
-        }
-
-        public int getSize() {
-            return size;
-        }
-
-        public List<String> getSubDirectories() {
-            return subDirectories;
+            this.subDirectores = subDirectories;
         }
     }
 }
