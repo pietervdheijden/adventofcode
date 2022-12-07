@@ -86,13 +86,13 @@ public class App {
         return size;
     }
 
-    private final static class Directory {
-        public int size;
-        public List<String> subDirectores;
+    private static class Directory {
+        public final int size;
+        public final List<String> subDirectores;
 
         public Directory(int size, List<String> subDirectories) {
             this.size = size;
-            this.subDirectores = subDirectories;
+            this.subDirectores = List.copyOf(subDirectories);
         }
     }
 }
