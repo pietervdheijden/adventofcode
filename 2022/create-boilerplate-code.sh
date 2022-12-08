@@ -29,18 +29,25 @@ import java.nio.file.Paths;
 
 public class App {
     public static void main(String args[]) throws IOException {
-        System.out.println(\"Assignment 1 - example: expected=TODO, actual=\" + calculate(\"example.txt\", true));
-        System.out.println(\"Assignment 1 - mypuzzle: expected=TODO, actual=\" + calculate(\"mypuzzle.txt\", true));
-
-        System.out.println(\"Assignment 2 - example: expected=TODO, actual=\" + calculate(\"example.txt\", false));
-        System.out.println(\"Assignment 2 - mypuzzle: expected=TODO, actual=\" + calculate(\"mypuzzle.txt\", false));
+        calculate(true, \"example.txt\", 0);
+        // calculate(true, \"mypuzzle.txt\", 0);
+        // calculate(false, \"example.txt\", 0);
+        // calculate(false, \"mypuzzle.txt\", 0);
     }    
 
     private static int calculate(String dataset, Boolean assignment1) throws IOException {
         var puzzle = Files.readString(Paths.get(\"datasets/\" + dataset));
 
         // TODO
-        return 0;
+
+        // Print results
+        var actual = assignment1 ? 0 : 0;
+        System.out.println(String.format(\"Assignment %s - dataset=%s [%s]\t: expected=%s, actual=%s\", 
+            assignment1 ? \"1\" : \"2\",
+            dataset,
+            expected == actual ? \"PASSED\" : \"FAILED\",
+            expected,
+            actual));
     }
 }" > $dayDir/App.java
 
