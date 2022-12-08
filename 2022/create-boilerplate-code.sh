@@ -35,7 +35,7 @@ public class App {
         // calculate(false, \"mypuzzle.txt\", 0);
     }    
 
-    private static int calculate(String dataset, Boolean assignment1) throws IOException {
+    private static void calculate(Boolean assignment1, String dataset, int expected) throws IOException {
         var puzzle = Files.readString(Paths.get(\"datasets/\" + dataset));
 
         // TODO
