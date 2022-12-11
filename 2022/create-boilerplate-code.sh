@@ -42,7 +42,7 @@ public class App {
 
         // Print results
         var actual = assignment1 ? 0 : 0;
-        System.out.println(String.format(\"Assignment %s - dataset=%s [%s]\\t: expected=%s, actual=%s\", 
+        System.out.println(String.format(\"Assignment %s - dataset=%s [%s]\\\t: expected=%s, actual=%s\", 
             assignment1 ? \"1\" : \"2\",
             dataset,
             expected == actual ? \"PASSED\" : \"FAILED\",
