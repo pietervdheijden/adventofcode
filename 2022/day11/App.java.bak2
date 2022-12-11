@@ -1,0 +1,188 @@
+import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public class App {
+    public static void main(String args[]) throws IOException {
+        calculate(true, "example.txt", 10605);
+        calculate(true, "mypuzzle.txt", 51075);
+        calculate(false, "example.txt", 2713310158l);
+        calculate(false, "mypuzzle.txt", 11741456163l);
+    }    
+
+    private static void calculate(Boolean assignment1, String dataset, long expected) throws IOException {
+        var puzzle = Files.readString(Paths.get("datasets/" + dataset));
+
+        // Parse monkeys
+        var monkeys = new ArrayList<Monkey>();
+        var regex = """
+Monkey [0-9]:
+  Starting items: (.+)
+  Operation: new = (.+) ([\\*|\\+]) (.+)
+  Test: divisible by ([0-9]+)
+    If true: throw to monkey ([0-9])
+    If false: throw to monkey ([0-9])""";
+        var matcher = Pattern.compile(regex).matcher(puzzle);
+        while (matcher.find()) {
+            // var startingItems = Arrays.stream(matcher.group(1).split(", ")).mapToLong(Long::parseLong).boxed().toList();
+            var startingItems = Arrays.stream(matcher.group(1).split(", ")).map(BigInteger::new).toList();
+            var operation1 = matcher.group(2);
+            var operation2 = matcher.group(3);
+            var operation3 = matcher.group(4);
+            var divisibleBy = Integer.parseInt(matcher.group(5));
+            var trueMonkey = Integer.parseInt(matcher.group(6));
+            var falseMonkey = Integer.parseInt(matcher.group(7));
+
+            monkeys.add(new Monkey(startingItems, operation1, operation2, operation3, divisibleBy, trueMonkey, falseMonkey));
+        }
+        var lcm = lcm(monkeys.stream().mapToLong(m -> m.divisibleBy).toArray());
+
+        System.out.println("Process monkeys");
+        var inspectCount = new Long[monkeys.size()]; // todo: consider adding this to class Monkey
+        Arrays.fill(inspectCount, 0l);
+        for (var round = 1; round <= 10000; round++) {
+            System.out.println("round="+round);
+            for (var j = 0; j < monkeys.size(); j++) {          
+                System.out.println("monkey=" + j);      
+                // System.out.println(String.format("i=%s,j=%s", i, j));
+                var monkey = monkeys.get(j);
+
+                System.out.println("oldItems=" + monkey.items.toString());
+                // Inspect
+                for (var k = 0; k < monkey.items.size(); k++) {
+                    var oldItem = monkey.items.get(k);
+                    var newItem = monkey.items.get(k);
+                    
+                    var operation3Value = (monkey.operation3.equals("old")) ? newItem : new BigInteger(monkey.operation3);
+                    if (monkey.operation2.equals("*"))
+                        newItem = newItem.multiply(operation3Value);
+                    else
+                        newItem = newItem.add(operation3Value);
+                    // newItem = newItem.divide(BigInteger.valueOf(3)); // Assignment 1: divide by 3
+
+                    newItem = newItem.mod(BigInteger.valueOf(lcm)); // Assignment 2: divide by lcm (least common multiple)
+
+                    monkey.items.set(k, newItem);                    
+                    inspectCount[j]++;
+
+                    // System.out.println(String.format("operation=%s, operation3Value=%s, oldItem=%s, newItem=%s, divisible=%s", monkey.operation2, operation3Value, oldItem, newItem, monkey.divisibleBy));
+                }
+                System.out.println("newItems=" + monkey.items.toString());
+                System.out.println("inspectCount="+inspectCount[j]);
+
+                // Throw
+                for (var item : monkey.items) {
+                    if ((item.mod(BigInteger.valueOf(monkey.divisibleBy)) == BigInteger.valueOf(0))) {
+                        // System.out.println("trueMonkey");
+                        // item = item.divide(BigInteger.valueOf(monkey.divisibleBy));
+                        // item 
+                        // item = BigInteger.valueOf(0);
+                        System.out.println("Throw item="+item+ " to monkey="+monkey.trueMonkey);
+                        monkeys.get(monkey.trueMonkey).items.add(item);
+                    } else {
+                        // if (item > BigInteger.valueOf(monkey.divisibleBy) {
+
+                        // }
+                        // item = item.mod(BigInteger.valueOf(monkey.divisibleBy));
+                        // item = item.mod(BigInteger.valueOf(monkey.divisibleBy));
+                        // item = item.divide(BigInteger.valueOf(monkey.divisibleBy));
+                        System.out.println("Throw item="+item+ " to monkey="+monkey.falseMonkey);
+                        monkeys.get(monkey.falseMonkey).items.add(item);
+                    }
+
+
+                }
+                monkey.items.clear();
+            }
+            for (var monkey : inspectCount)
+                System.out.println(monkey);
+            System.out.println("---");
+        }
+
+        // for (var monkey : monkeys)
+        //     System.out.println(monkey);
+        for (var monkey : inspectCount)
+            System.out.println(monkey);
+
+        Arrays.sort(inspectCount, Collections.reverseOrder());
+        var monkeyBusiness = inspectCount[0] * inspectCount[1];
+
+        // Print results
+        var actual = monkeyBusiness;
+        System.out.println(String.format("Assignment %s - dataset=%s [%s]\t: expected=%s, actual=%s", 
+            assignment1 ? "1" : "2",
+            dataset,
+            expected == actual ? "PASSED" : "FAILED",
+            expected,
+            actual));
+    }
+
+    private static class Monkey {
+        public final List<BigInteger> items;
+        public final String operation1;
+        public final String operation2;
+        public final String operation3;
+        public final int divisibleBy; // TODO: rename to divisibleFactor?
+        public final int trueMonkey;
+        public final int falseMonkey;
+
+        public Monkey(List<BigInteger> items, String operation1, String operation2, String operation3, int divisbleBy, int trueMonkey, int falseMonkey) {
+            this.items = new ArrayList<>(items);
+            this.operation1 = operation1;
+            this.operation2 = operation2;
+            this.operation3 = operation3;
+            this.divisibleBy = divisbleBy;
+            this.trueMonkey = trueMonkey;
+            this.falseMonkey = falseMonkey;
+        }
+
+        @Override public String toString() {
+            return String.format("""
+                    items=%s
+                    operation1=%s
+                    operation2=%s
+                    operation3=%s
+                    divisbleBy=%s
+                    trueMonkey=%s
+                    falseMonkey=%s""", items.toString(), operation1, operation2, operation3, divisibleBy, trueMonkey, falseMonkey);
+        }
+    }
+
+    // Helper functions to calculate lcm (Least Common Multiplier)
+    // Source: https://stackoverflow.com/a/53549432/3737152
+    private static long gcd(long a, long b)
+    {
+        while (b > 0)
+        {
+            long temp = b;
+            b = a % b; // % is remainder
+            a = temp;
+        }
+        return a;
+    }
+    private static long gcd(long[] input)
+    {
+        long result = input[0];
+        for(int i = 1; i < input.length; i++) result = gcd(result, input[i]);
+        return result;
+    }
+    private static long lcm(long a, long b)
+    {
+        return a * (b / gcd(a, b));
+    }
+    private static long lcm(long[] input)
+    {
+        long result = input[0];
+        for(int i = 1; i < input.length; i++) result = lcm(result, input[i]);
+        return result;
+    }
+}
