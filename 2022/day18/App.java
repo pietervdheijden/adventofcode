@@ -4,6 +4,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class App {
     public static void main(String args[]) throws IOException {
@@ -19,7 +20,7 @@ public class App {
         var puzzle = Files.readString(Paths.get("datasets/" + dataset));
 
         // Parse lava
-        var lava = puzzle.lines().map(l -> l.split(",")).map(l -> new Cube(Integer.parseInt(l[0]), Integer.parseInt(l[1]), Integer.parseInt(l[2]))).toList();
+        var lava = puzzle.lines().map(l -> l.split(",")).map(l -> new Cube(Integer.parseInt(l[0]), Integer.parseInt(l[1]), Integer.parseInt(l[2]))).collect(Collectors.toSet());
         final var minX = lava.stream().mapToInt(c -> c.x).min().getAsInt() - 1;
         final var maxX = lava.stream().mapToInt(c -> c.x).max().getAsInt() + 1;
         final var minY = lava.stream().mapToInt(c -> c.y).min().getAsInt() - 1;
